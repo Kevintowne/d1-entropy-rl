@@ -1,0 +1,7 @@
+model_name_or_path: GSAI-ML/LLaDA-8B-Instruct
+batch_size: 1
+grad_accum_steps: 8
+num_epochs: 20
+save_strategy: epoch
+save_total_limit: 1
+save_safetensors: true
