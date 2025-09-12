@@ -1,35 +1,27 @@
-# d1-entropy-rl
+# 1 Create venv & install deps
+python -m venv .venv
+source .venv/bin/activate
+pip install -U pip
+pip install -r environment.txt
+# if bitsandbytes fails with pip, follow bitsandbytes install docs for your CUDA / driver
 
-SFT → PPO/GRPO on top of d1, with **policy entropy reduction** (sample-based entropy penalty + schedule).
-This repo includes minimal scripts & configs to reproduce SFT and RL with entropy control.
+# 2 Pre-cache models (or run locally):
+# this script should pull model to ./cache/models/<model> so runs are offline-friendly
+python scripts/cache_model.py --model_id GSAI-ML/LLaDA-8B-Instruct --target_dir ./cache/models/LLaDA-8B-Instruct
 
-## Environment
-```bash
-conda env create -f environment.yml
-conda activate d1
-bash scripts/verify_env.sh
-
-
-# choose local cache dir (no need to edit scripts later)
-export OUT=$PWD/cache/models/LLaDA-8B-Instruct
-export MODEL_ID=GSAI-ML/LLaDA-8B-Instruct
-
-# (optional, for speed / access)
-# export HF_HUB_ENABLE_HF_TRANSFER=1
-# export HUGGINGFACE_HUB_TOKEN=...         # if gated
-# export HF_ENDPOINT=https://hf-mirror.com # if needed
-
-python scripts/cache_model.py   # downloads to $OUT
+# 3 Smoke-test LoRA SFT (single GPU)
+# single-GPU smoke run
+NUM_PROC=1 SMOKE_TEST=1 PER_DEV_BS=1 GRAD_ACCUM=1 bash scripts/run_sft_lora.sh
+# or if permission issues:
+NUM_PROC=1 SMOKE_TEST=1 PER_DEV_BS=1 GRAD_ACCUM=1 bash scripts/run_sft_lora.sh
 
 
-# uses vendored d1 at vendor/d1, outputs to ./outputs/sft/
-bash scripts/run_sft.sh
+# 4 Smoke-test PPO (single GPU):
+# force 8-bit to reduce mem; short generation
+FORCE_8BIT=1 NUM_PROC=1 PER_DEV_BS=1 GA=1 TOTAL_UPDATES=3 MAX_NEW=32 bash scripts/run_rl_ppo.sh
 
-# defaults: MODEL=./cache/models/LLaDA-8B-Instruct, REF=./outputs/sft/final (if exists)
-bash scripts/run_rl_ppo.sh
-# bash scripts/run_rl_grpo.sh
-
-# python eval/quick_eval.py --model_path outputs/ppo_entropy/final \
-#   --input "Explain PPO vs GRPO in one paragraph." --use_chat_template
-
-
+# 5 If single-GPU smoke passes, scale to 4×A100:
+# make sure accelerate config ddp_4gpu.yaml points to 4 processes per node and uses `mixed_precision: bf16` ideally
+NUM_PROC=4 PER_DEV_BS=1 GA=1 TOTAL_UPDATES=100 bash scripts/run_rl_ppo.sh
+# or if you need forced 8-bit:
+FORCE_8BIT=1 NUM_PROC=4 PER_DEV_BS=1 GA=1 TOTAL_UPDATES=100 bash scripts/run_rl_ppo.sh
