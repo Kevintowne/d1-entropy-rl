@@ -14,7 +14,6 @@ export MKL_NUM_THREADS=${MKL_NUM_THREADS:-1}
 
 # dataset (offline-friendly)
 DATASET_PATH=${DATASET_PATH:-$ROOT/cache/datasets/s1K}
-EXTRA=()
 [ -d "$DATASET_PATH" ] && EXTRA+=(--dataset_path "$DATASET_PATH") || \
   echo "[WARN] No local dataset at $DATASET_PATH; will try Hub (needs internet)."
 
