@@ -3,7 +3,7 @@ set -euo pipefail
 EXTRA=()
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
-# number of processes (GPUs) to use on this single node (labmate will set NUM_PROC=4)
+# number of processes (GPUs) to use on this single node
 NUM_PROC=${NUM_PROC:-1}
 export WORLD_SIZE=${WORLD_SIZE:-$NUM_PROC}
 
