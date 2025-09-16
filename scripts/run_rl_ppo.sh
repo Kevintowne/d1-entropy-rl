@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+EXTRA=()
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 # number of processes (GPUs) to use on this single node (labmate will set NUM_PROC=4)
@@ -65,5 +66,5 @@ python -m accelerate.commands.launch \
   --entropy_warmup_steps "$ENTROPY_WARMUP_STEPS" \
   --gen_max_new_tokens "$MAX_NEW" \
   --total_updates "$TOTAL_UPDATES" \
-  "${EXTRA[@]}"
+  "${EXTRA[@]:-}"
 
