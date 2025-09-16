@@ -9,8 +9,8 @@ pip install -r environment.txt
 #### this script should pull model to ./cache/models/<model> so runs are offline-friendly
 python scripts/cache_model.py --model_id GSAI-ML/LLaDA-8B-Instruct --target_dir ./cache/models/LLaDA-8B-Instruct
 
-# from repo root, this should pull dataset to ./cache/datasets/s1K
-source .venv/bin/activate
+#### from repo root, this should pull dataset to ./cache/datasets/s1K
+source .venv/bin/activate  
 OUT=./cache/datasets/s1K python scripts/cache_s1k.py
 
 ## 3 Smoke-test LoRA SFT (single GPU)
