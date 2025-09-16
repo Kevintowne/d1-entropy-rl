@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+EXTRA=()
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 # number of processes (GPUs) to use on this single node (labmate will set NUM_PROC=4)
@@ -56,4 +57,4 @@ python -m accelerate.commands.launch \
   --max_length "$MAX_LEN" \
   --lora_r 16 --lora_alpha 32 --lora_dropout 0.05 \
   --bf16 true \
-  "${EXTRA[@]}"
+  "${EXTRA[@]:-}"
