@@ -95,11 +95,11 @@ def main():
     _dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
     if _use_8bit:
-        print("[SFT] Loading model in 8-bit (bitsandbytes) with device_map='auto'")
+        print("[SFT] Loading model in 8-bit (bitsandbytes) with device_map='None'")
         model = AutoModelForCausalLM.from_pretrained(
             args.model_name_or_path,
             load_in_8bit=True,
-            device_map="auto",
+            device_map=None,
             trust_remote_code=True,
         )
         try:
@@ -110,11 +110,11 @@ def main():
     else:
         if _WORLD_SIZE > 1:
             # multi-GPU run: ask HF to shard with device_map='auto'
-            print("[SFT] WORLD_SIZE>1 => using device_map='auto' and torch_dtype=", _dtype)
+            print("[SFT] WORLD_SIZE>1 => using device_map=None and torch_dtype=", _dtype)
             model = AutoModelForCausalLM.from_pretrained(
                 args.model_name_or_path,
                 torch_dtype=_dtype,
-                device_map="auto",
+                device_map=None,
                 trust_remote_code=True,
             )
         else:
