@@ -2,7 +2,7 @@
 python -m venv .venv
 source .venv/bin/activate
 pip install -U pip
-pip install -r environment.txt
+pip install -r environment.yaml
 #### if bitsandbytes fails with pip, follow bitsandbytes install docs for your CUDA / driver
 
 ## 2 Pre-cache models and dataset(or run locally):
